@@ -254,8 +254,8 @@
                 const desc = cols[1] || '';
                 const bin  = cols[2] || '';
 
-                // Generate QR String: Bin Label
-                const qrValue = bin;
+                // Generate QR String: PN + Bin Label
+                const qrValue = bin ? `${pn}_${bin}` : pn;
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(qrValue)}`;
 
                 const labelDiv = document.createElement('div');
