@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WH Issuing Rack Label Printer</title>
+    <title>WH Component Bin Label Generator</title>
     <style>
         
         /* --- UI Styles (Visible on Screen Only) --- */
@@ -82,12 +82,24 @@
             position: relative;
         }
 
-        /* Header with Logo + Entity Name (Left) and QR Code (Right) */
-        .label-header {
+        /* Top section: Logo/Entity + Part Number (Left) and big QR Code (Right).
+           The line under the part number spans the full width, and the QR
+           sits directly on top of it. */
+        .label-top {
             display: flex;
-            align-items: center;
-            justify-content: space-between; /* Pushes QR code to top-right corner */
+            align-items: stretch;
+            justify-content: space-between;
+            gap: 6px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 1px;
             margin-bottom: 1px;
+        }
+        .top-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-width: 0;
+            flex: 1;
         }
         .header-left {
             display: flex;
@@ -106,9 +118,10 @@
             letter-spacing: 0.3px;
         }
         .qr-code-img {
-            height: 28px;
-            width: 28px;
+            height: 42px;
+            width: 42px;
             object-fit: contain;
+            flex-shrink: 0;
         }
 
         /* Part Number Styling */
@@ -116,16 +129,13 @@
             font-size: 15px;
             font-weight: bold;
             color: #000;
-            border-bottom: 1px solid #000;
-            padding-bottom: 1px;
-            margin-bottom: 1px;
             line-height: 1.15;
             word-break: break-all;
         }
 
         /* Max 2 Lines Description with Truncation */
         .description {
-            font-size: 13px;
+            font-size: 11px;
             color: #222;
             line-height: 1.15;
             max-height: 2.3em; /* Exactly 2 lines */
@@ -139,12 +149,13 @@
 
         /* Bin Label */
         .bin-label {
-            font-size: 11px;
+            font-size: 14px;
             font-weight: bold;
             color: #000;
             border-top: 1px solid #ccc;
             padding-top: 1px;
             margin-top: auto;
+            line-height: 1.15;
         }
 
         /* --- Print Styles --- */
@@ -183,7 +194,7 @@
 <body>
 
     <div class="controls">
-        <h2>WH Issuing Label Generator</h2>
+        <h2>WH Component Bin Label Generator</h2>
         <p>Paste directly from Excel (Format: <strong>PN | Desc | Bin Label</strong>):</p>
         <textarea id="data-input" placeholder="Copy rows from Excel and paste them here directly..." oninput="generateLabels()"></textarea>
 
@@ -195,14 +206,16 @@
     <div id="preview-container">
         <!-- Default sample preview -->
         <div class="label">
-            <div class="label-header">
-                <div class="header-left">
-                    <img class="logo" alt="SLB Logo" src="https://slb.widen.net/content/mqqr1tincc/jpeg/SLB_Logo_Black_R.jpeg?w=640&keep=c&crop=yes&quality=80&x.portal_shortcode_generated=fp1w1w0f&x.app=portals">
-                    <span class="entity-name">BTTC CAM A425</span>
+            <div class="label-top">
+                <div class="top-left">
+                    <div class="header-left">
+                        <img class="logo" alt="SLB Logo" src="https://slb.widen.net/content/mqqr1tincc/jpeg/SLB_Logo_Black_R.jpeg?w=640&keep=c&crop=yes&quality=80&x.portal_shortcode_generated=fp1w1w0f&x.app=portals">
+                        <span class="entity-name">BTTC CAM A425</span>
+                    </div>
+                    <div class="part-number">SAMPLE-PN</div>
                 </div>
-                <img class="qr-code-img" alt="QR Code" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SAMPLE-PN_1_BATCH-001">
+                <img class="qr-code-img" alt="QR Code" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=A1-02">
             </div>
-            <div class="part-number">SAMPLE-PN</div>
             <div class="description">Paste your Excel data above to view formatted stickers with the logo, QR code, and Bin Label automatically.</div>
             <div class="bin-label">BIN: A1-02</div>
         </div>
@@ -249,14 +262,16 @@
                 labelDiv.className = 'label';
 
                 labelDiv.innerHTML = `
-                    <div class="label-header">
-                        <div class="header-left">
-                            <img class="logo" alt="SLB Logo" src="${LOGO_URL}">
-                            <span class="entity-name">BTTC CAM A425</span>
+                    <div class="label-top">
+                        <div class="top-left">
+                            <div class="header-left">
+                                <img class="logo" alt="SLB Logo" src="${LOGO_URL}">
+                                <span class="entity-name">BTTC CAM A425</span>
+                            </div>
+                            <div class="part-number">${escapeHtml(pn)}</div>
                         </div>
                         <img class="qr-code-img" alt="QR Code" src="${qrUrl}">
                     </div>
-                    <div class="part-number">${escapeHtml(pn)}</div>
                     <div class="description">${escapeHtml(desc)}</div>
                     <div class="bin-label">${bin ? `BIN: ${escapeHtml(bin)}` : ''}</div>
                 `;
